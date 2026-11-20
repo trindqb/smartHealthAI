@@ -169,6 +169,16 @@
       .footer-links a { color: var(--green); font-size: 10px; font-weight: 650; text-decoration: none; }
       .footer-links a:hover { text-decoration: underline; }
 
+      .notebooklm-bubble {
+        position: fixed; z-index: 15; right: 24px; bottom: 24px; display: inline-flex;
+        align-items: center; gap: 10px; min-height: 52px; padding: 0 18px;
+        border: 0; border-radius: 999px; background: var(--green); color: var(--paper);
+        box-shadow: 0 8px 24px rgb(22 61 57 / 24%); text-decoration: none;
+        font-size: 13px; font-weight: 750; transition: background .2s, transform .2s;
+      }
+      .notebooklm-bubble:hover { background: var(--green-dark); transform: translateY(-2px); }
+      .notebooklm-bubble svg { width: 20px; height: 20px; flex: 0 0 auto; }
+
       dialog {
         width: min(520px, calc(100% - 32px)); max-height: min(82vh, 700px); padding: 0; overflow: auto;
         border: 0; border-radius: 20px; background: var(--paper); color: var(--ink); box-shadow: 0 24px 80px rgb(0 0 0 / 24%);
@@ -232,6 +242,7 @@
         .emergency-banner::after { right: -70px; }
         .footer-wrap { flex-direction: column; }
         .footer-links { gap: 13px; }
+        .notebooklm-bubble { right: 16px; bottom: 16px; min-height: 48px; padding-inline: 15px; }
       }
       @media (max-width: 380px) {
         .nav-call { gap: 5px; padding-inline: 10px; }
@@ -458,6 +469,21 @@
       </div>
     </footer>
 
+    <a
+      class="notebooklm-bubble"
+      id="nlm-bubble-btn"
+      href="https://notebooklm.google.com/notebook/463ee099-c222-4582-9cfa-9bf47b236a5c"
+      target="NotebookLMChat"
+      rel="noopener noreferrer"
+      aria-label="Mở NotebookLM trong cửa sổ mới"
+    >
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M6 3.75h8l4 4v12.5H6a2 2 0 0 1-2-2v-12.5a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+        <path d="M14 4v4h4M8 12h8m-8 3.5h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>Hỏi NotebookLM</span>
+    </a>
+
     <dialog id="guide-dialog" aria-labelledby="dialog-title">
       <div class="dialog-content">
         <div class="dialog-head">
@@ -581,6 +607,32 @@
           if (matches) visibleCount += 1;
         });
         noResults.classList.toggle("visible", visibleCount === 0);
+      });
+
+      const notebookButton = document.querySelector("#nlm-bubble-btn");
+      notebookButton.addEventListener("click", (event) => {
+        const width = Math.min(420, window.screen.availWidth);
+        const height = Math.min(650, window.screen.availHeight);
+        const screenLeft = window.screen.availLeft ?? 0;
+        const screenTop = window.screen.availTop ?? 0;
+        const left = Math.max(screenLeft, Math.min(
+          screenLeft + window.screen.availWidth - width - 24,
+          window.screenX + window.outerWidth - width - 24
+        ));
+        const top = Math.max(screenTop, Math.min(
+          screenTop + window.screen.availHeight - height - 24,
+          window.screenY + window.outerHeight - height - 70
+        ));
+        const popup = window.open(
+          notebookButton.href,
+          "NotebookLMChat",
+          `popup=yes,width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`
+        );
+
+        if (popup) {
+          event.preventDefault();
+          popup.opener = null;
+        }
       });
     </script>
   </body>
